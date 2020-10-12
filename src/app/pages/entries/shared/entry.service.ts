@@ -11,7 +11,7 @@ import { element } from '@angular/core/src/render3';
 })
 export class EntryService {
 
-  private apiPath: string = "api/categories";
+  private apiPath: string = "api/entries";
 
   constructor(private http: HttpClient) { }
 
@@ -59,13 +59,17 @@ export class EntryService {
 
   //metodos privados
   private jsonDataToEntries(jsonData: any[]):Entry[]{
-    const entradas: Entry[] = [];
-    jsonData.forEach(element=> entradas.push(element as Entry));
-    return entradas;
+    const entries: Entry[] = [];
+    //loop nos objetos do jsonData
+    jsonData.forEach(element=>{
+      const entry = Object.assign(new Entry, element);
+      entries.push(entry);
+    });
+    return entries;
   }
 
   private jsonDataToEntrie(jsonData: any): Entry{
-    return jsonData as Entry;
+    return Object.assign(new Entry, jsonData);
   }
 
   private handleError(error: any): Observable<any>{
