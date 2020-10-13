@@ -5,6 +5,7 @@ import { map, catchError, flatMap} from "rxjs/operators";
 
 import { Entry } from "./entry.model";
 import { element } from '@angular/core/src/render3';
+import { CategoryService } from '../../categories/shared/category.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class EntryService {
 
   private apiPath: string = "api/entries";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private categoryService: CategoryService) { }
 
 
   //metodos
@@ -34,18 +35,44 @@ export class EntryService {
   }
 
   create(entrada: Entry): Observable<Entry>{
-    return this.http.post(this.apiPath, entrada).pipe(
+    //esta parte é somente por causa do banco de dados ser em memoria
+    return this.categoryService.getById(entrada.categoryId).pipe(
+      flatMap(category => {
+        entrada.category = category;
+
+        return this.http.post(this.apiPath, entrada).pipe(
+          catchError(this.handleError),
+          map(this.jsonDataToEntrie)
+        )
+      })
+    )
+    
+    /*return this.http.post(this.apiPath, entrada).pipe(
       catchError(this.handleError),
       map(this.jsonDataToEntrie)
-    )
+    )*/
   }
 
   update(entrada: Entry): Observable<Entry>{
     const url = `${this.apiPath}/${entrada.id}`;
+
+    //esta parte é somente por causa do banco de dados ser em memoria
+    return this.categoryService.getById(entrada.categoryId).pipe(
+      flatMap(category => {
+        entrada.category = category;
+
+        return this.http.put("asdfasdf", entrada).pipe(
+          catchError(this.handleError),
+          map(() => entrada)
+        )
+      })
+    )
+
+    /*
     return this.http.put("asdfasdf", entrada).pipe(
       catchError(this.handleError),
       map(() => entrada)
-    )
+    )*/
   }
 
   delete(id: number): Observable<any>{
