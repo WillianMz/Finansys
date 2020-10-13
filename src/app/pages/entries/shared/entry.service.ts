@@ -61,7 +61,7 @@ export class EntryService {
       flatMap(category => {
         entrada.category = category;
 
-        return this.http.put("asdfasdf", entrada).pipe(
+        return this.http.put(url, entrada).pipe(
           catchError(this.handleError),
           map(() => entrada)
         )
